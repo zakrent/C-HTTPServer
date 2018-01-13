@@ -4,9 +4,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <signal.h>
 
 typedef struct{
 	char htmlVersion[9];
@@ -114,7 +116,9 @@ void handleConnection(int socket){
 	free(response.headers);
 }
 
+
 int main(){
+	signal(SIGCHLD, SIG_IGN);
 	int serverSocket = initializeServerSocket("0.0.0.0");
 	while(1){
 		int connectionSocket = accept(serverSocket, NULL, NULL);
