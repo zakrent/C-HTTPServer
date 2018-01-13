@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
 #include <alloca.h>
 #include <string.h>
@@ -131,6 +132,25 @@ char* generateResponseHeader(Response response){
 	return string;
 }
 
+char* getCurrentTimeString(){
+	time_t rawtime;
+	struct tm * timeinfo;
+
+	time ( &rawtime );
+	timeinfo = gmtime( &rawtime );
+	return asctime(timeinfo);
+}
+
+char* generateHeaderFields(){
+	char* headers = malloc(512);
+	memset(headers, 0, 512);
+
+	strcat(headers, "Server: CSSer\r\n");
+	strcat(headers, "Date: ");
+	strcat(headers, getCurrentTimeString());
+	strcat(headers, "Connection: close\r\n");
+	return headers;
+}
 
 void handleConnection(int socket){
 	//Create buffer for recv data
@@ -186,6 +206,7 @@ void handleConnection(int socket){
 
 	//Form a header
 
+	response.headers = generateHeaderFields();
 	char* headerString = generateResponseHeader(response);
 
 	//Send the response
